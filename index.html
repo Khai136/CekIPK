@@ -52,7 +52,13 @@
         <div class="summary-card glass-effect glow-card animate-slide-up">
             <div class="summary-header">
                 <h2>📊 Ringkasan Akademik</h2>
-                <div class="pulse-dot"></div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button onclick="showAIAnalysis()" class="btn-ai-analysis">
+                        <i class="fa-solid fa-brain"></i>
+                        AI Analysis
+                    </button>
+                    <div class="pulse-dot"></div>
+                </div>
             </div>
             <div class="summary-grid">
                 <div class="summary-item highlight shine-effect">
@@ -152,6 +158,22 @@
             <div class="modal-footer">
                 <button onclick="closeCourseModal()" class="btn-secondary">Batal</button>
                 <button onclick="saveCourse()" class="btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Modal -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-brain"></i> AI Smart Analysis</h3>
+                <button onclick="closeAIModal()" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="aiAnalysisContent" class="ai-analysis-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeAIModal()" class="btn-secondary">Tutup</button>
             </div>
         </div>
     </div>

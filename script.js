@@ -452,3 +452,351 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+// ========================================
+// AI SMART ANALYSIS - ADDED
+// ========================================
+
+class AIAnalyzer {
+    constructor(semesters) {
+        this.semesters = semesters;
+    }
+
+    analyzeTrend() {
+        if (this.semesters.length < 2) return { trend: 'insufficient_data', direction: 'neutral' };
+        const ips = this.semesters.map(s => parseFloat(s.ip));
+        let increases = 0, decreases = 0;
+        for (let i = 1; i < ips.length; i++) {
+            if (ips[i] > ips[i-1]) increases++;
+            else if (ips[i] < ips[i-1]) decreases++;
+        }
+        if (increases > decreases) return { trend: 'improving', direction: 'up', strength: increases };
+        if (decreases > increases) return { trend: 'declining', direction: 'down', strength: decreases };
+        return { trend: 'stable', direction: 'neutral' };
+    }
+
+    findProblematicSemester() {
+        if (this.semesters.length < 2) return null;
+        let worstSem = this.semesters[0];
+        let worstIP = parseFloat(worstSem.ip);
+        this.semesters.forEach(sem => {
+            const ip = parseFloat(sem.ip);
+            if (ip < worstIP && ip > 0) {
+                worstIP = ip;
+                worstSem = sem;
+            }
+        });
+        return worstSem;
+    }
+
+    findBestSemester() {
+        if (this.semesters.length === 0) return null;
+        let bestSem = this.semesters[0];
+        let bestIP = parseFloat(bestSem.ip);
+        this.semesters.forEach(sem => {
+            const ip = parseFloat(sem.ip);
+            if (ip > bestIP) {
+                bestIP = ip;
+                bestSem = sem;
+            }
+        });
+        return bestSem;
+    }
+
+    analyzeSKSLoad() {
+        const avgSKS = this.semesters.reduce((sum, s) => sum + s.totalSKS, 0) / this.semesters.length;
+        const maxSKS = Math.max(...this.semesters.map(s => s.totalSKS));
+        const minSKS = Math.min(...this.semesters.map(s => s.totalSKS));
+        return { avgSKS: avgSKS.toFixed(1), maxSKS, minSKS };
+    }
+
+    analyzeGrades() {
+        const gradeCounts = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+        let totalCourses = 0;
+        this.semesters.forEach(sem => {
+            sem.courses.forEach(course => {
+                totalCourses++;
+                if (course.grade >= 3.5) gradeCounts.A++;
+                else if (course.grade >= 2.5) gradeCounts.B++;
+                else if (course.grade >= 1.5) gradeCounts.C++;
+                else if (course.grade >= 1.0) gradeCounts.D++;
+                else gradeCounts.E++;
+            });
+        });
+        return {
+            A: ((gradeCounts.A / totalCourses) * 100).toFixed(1),
+            B: ((gradeCounts.B / totalCourses) * 100).toFixed(1),
+            C: ((gradeCounts.C / totalCourses) * 100).toFixed(1),
+            D: ((gradeCounts.D / totalCourses) * 100).toFixed(1),
+            E: ((gradeCounts.E / totalCourses) * 100).toFixed(1),
+            total: totalCourses
+        };
+    }
+
+    generateRecommendations() {
+        const result = calculateIPK();
+        const ipk = parseFloat(result.ipk);
+        const trend = this.analyzeTrend();
+        const sksLoad = this.analyzeSKSLoad();
+        const grades = this.analyzeGrades();
+        const recommendations = [];
+
+        if (ipk >= 3.75) {
+            recommendations.push({
+                type: 'success',
+                icon: 'fa-trophy',
+                title: 'Excellent Performance! 🏆',
+                message: 'IPK kamu sudah Cum Laude level! Pertahankan konsistensi ini sampai akhir.'
+            });
+        } else if (ipk >= 3.50) {
+            recommendations.push({
+                type: 'success',
+                icon: 'fa-star',
+                title: 'Great Job! ⭐',
+                message: `IPK kamu ${ipk}, tinggal ${(3.75 - ipk).toFixed(2)} lagi untuk Cum Laude!`
+            });
+        } else if (ipk >= 3.00) {
+            recommendations.push({
+                type: 'warning',
+                icon: 'fa-chart-line',
+                title: 'Good Progress 📈',
+                message: `IPK kamu ${ipk}. Fokus naikkan ke 3.5+ untuk predikat lebih baik.`
+            });
+        } else if (ipk > 0) {
+            recommendations.push({
+                type: 'danger',
+                icon: 'fa-exclamation-triangle',
+                title: 'Perlu Perhatian! ⚠️',
+                message: `IPK ${ipk} perlu ditingkatkan. Focus, konsisten, dan jangan menyerah!`
+            });
+        }
+
+        if (trend.direction === 'down') {
+            recommendations.push({
+                type: 'warning',
+                icon: 'fa-arrow-trend-down',
+                title: 'IP Menurun',
+                message: `IP kamu turun di ${trend.strength} semester terakhir.`,
+                suggestions: [
+                    'Kurangi beban SKS semester depan (max 20 SKS)',
+                    'Identifikasi mata kuliah sulit dan fokus di sana',
+                    'Join study group atau cari tutor',
+                    'Atur jadwal belajar lebih terstruktur'
+                ]
+            });
+        } else if (trend.direction === 'up') {
+            recommendations.push({
+                type: 'success',
+                icon: 'fa-arrow-trend-up',
+                title: 'Tren Positif! 📈',
+                message: `IP kamu naik di ${trend.strength} semester terakhir. Pertahankan!`
+            });
+        }
+
+        if (sksLoad.maxSKS > 24) {
+            recommendations.push({
+                type: 'warning',
+                icon: 'fa-book',
+                title: 'Beban SKS Terlalu Tinggi',
+                message: `Max SKS kamu ${sksLoad.maxSKS} - terlalu banyak! Ideal: 18-21 SKS.`,
+                suggestions: [
+                    'Kurangi SKS semester depan jadi 18-21 SKS',
+                    'Prioritas kualitas daripada kuantitas'
+                ]
+            });
+        }
+
+        if (parseFloat(grades.C) > 20 || parseFloat(grades.D) > 5) {
+            recommendations.push({
+                type: 'warning',
+                icon: 'fa-chart-pie',
+                title: 'Distribusi Nilai Perlu Diperbaiki',
+                message: `${grades.C}% nilai C dan ${grades.D}% nilai D.`,
+                suggestions: [
+                    'Fokus di 3-4 mata kuliah inti per semester',
+                    'Mulai belajar dari awal, jangan SKS (Sistem Kebut Semalam)',
+                    'Aktif bertanya ke dosen saat tidak paham'
+                ]
+            });
+        } else if (parseFloat(grades.A) > 60) {
+            recommendations.push({
+                type: 'success',
+                icon: 'fa-medal',
+                title: 'Distribusi Nilai Excellent!',
+                message: `${grades.A}% nilai A/A- - Luar biasa konsisten!`
+            });
+        }
+
+        return recommendations;
+    }
+
+    analyze() {
+        if (this.semesters.length === 0) {
+            return { status: 'no_data', message: 'Belum ada data untuk dianalisis.' };
+        }
+        return {
+            status: 'success',
+            trend: this.analyzeTrend(),
+            sksLoad: this.analyzeSKSLoad(),
+            grades: this.analyzeGrades(),
+            recommendations: this.generateRecommendations(),
+            worstSem: this.findProblematicSemester(),
+            bestSem: this.findBestSemester()
+        };
+    }
+}
+
+function showAIAnalysis() {
+    if (semesters.length === 0) {
+        alert('Belum ada data!\n\nTambahkan semester dan mata kuliah dulu.');
+        return;
+    }
+    document.getElementById('aiModal').classList.add('show');
+    document.getElementById('aiAnalysisContent').innerHTML = `
+        <div class="ai-loading">
+            <div class="ai-loading-spinner"></div>
+            <p>AI sedang menganalisis data kamu...</p>
+        </div>
+    `;
+    setTimeout(() => {
+        const analyzer = new AIAnalyzer(semesters);
+        const analysis = analyzer.analyze();
+        if (analysis.status === 'no_data') {
+            document.getElementById('aiAnalysisContent').innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <h3>Belum Ada Data</h3>
+                    <p>${analysis.message}</p>
+                </div>
+            `;
+            return;
+        }
+        renderAIAnalysis(analysis);
+    }, 1500);
+}
+
+function closeAIModal() {
+    document.getElementById('aiModal').classList.remove('show');
+}
+
+function renderAIAnalysis(analysis) {
+    const result = calculateIPK();
+    const ipk = parseFloat(result.ipk);
+    let html = `
+        <div class="ai-section ${ipk >= 3.5 ? 'success' : ipk >= 3.0 ? 'warning' : 'danger'}">
+            <div class="ai-section-header">
+                <div class="ai-section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <span>Status Akademik Overall</span>
+            </div>
+            <div class="ai-section-content">
+                <div class="ai-stats-grid">
+                    <div class="ai-stat-item">
+                        <span class="ai-stat-value">${result.ipk}</span>
+                        <span class="ai-stat-label">IPK Kumulatif</span>
+                    </div>
+                    <div class="ai-stat-item">
+                        <span class="ai-stat-value">${result.totalSKS}</span>
+                        <span class="ai-stat-label">Total SKS</span>
+                    </div>
+                    <div class="ai-stat-item">
+                        <span class="ai-stat-value">${result.predikat}</span>
+                        <span class="ai-stat-label">Predikat</span>
+                    </div>
+                </div>
+                ${ipk < 3.75 ? `
+                    <div class="ai-progress-bar">
+                        <div class="ai-progress-fill" style="width: ${(ipk / 4.0) * 100}%"></div>
+                    </div>
+                    <p style="text-align: center; margin-top: 10px;">
+                        Progress ke Cum Laude: ${((ipk / 3.75) * 100).toFixed(1)}%
+                    </p>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    if (analysis.trend.direction !== 'neutral') {
+        html += `
+            <div class="ai-section ${analysis.trend.direction === 'up' ? 'success' : 'warning'}">
+                <div class="ai-section-header">
+                    <div class="ai-section-icon">
+                        <i class="fa-solid fa-chart-${analysis.trend.direction === 'up' ? 'line' : 'line-down'}"></i>
+                    </div>
+                    <span>Tren Performa</span>
+                </div>
+                <div class="ai-section-content">
+                    <p>${analysis.trend.direction === 'up' ? 
+                        `✅ IP menunjukkan tren NAIK di ${analysis.trend.strength} semester terakhir!` :
+                        `⚠️ IP menunjukkan tren TURUN di ${analysis.trend.strength} semester terakhir.`
+                    }</p>
+                    ${analysis.bestSem ? `<p style="margin-top:10px;"><strong>IP Tertinggi:</strong> ${analysis.bestSem.ip} (Sem ${analysis.bestSem.number})</p>` : ''}
+                    ${analysis.worstSem ? `<p><strong>IP Terendah:</strong> ${analysis.worstSem.ip} (Sem ${analysis.worstSem.number})</p>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    html += `
+        <div class="ai-section">
+            <div class="ai-section-header">
+                <div class="ai-section-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <span>Distribusi Nilai</span>
+            </div>
+            <div class="ai-section-content">
+                <p>Dari <strong>${analysis.grades.total}</strong> mata kuliah:</p>
+                <div style="margin: 15px 0;">
+                    <span class="ai-badge success">A/A-: ${analysis.grades.A}%</span>
+                    <span class="ai-badge">B: ${analysis.grades.B}%</span>
+                    <span class="ai-badge warning">C: ${analysis.grades.C}%</span>
+                    ${parseFloat(analysis.grades.D) > 0 ? `<span class="ai-badge danger">D: ${analysis.grades.D}%</span>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+
+    html += `
+        <div class="ai-section">
+            <div class="ai-section-header">
+                <div class="ai-section-icon"><i class="fa-solid fa-book-open"></i></div>
+                <span>Beban SKS</span>
+            </div>
+            <div class="ai-section-content">
+                <p><strong>Rata-rata:</strong> ${analysis.sksLoad.avgSKS} SKS | <strong>Max:</strong> ${analysis.sksLoad.maxSKS} SKS</p>
+                ${parseFloat(analysis.sksLoad.avgSKS) > 21 ? 
+                    `<p style="margin-top:10px;">⚠️ Beban SKS tinggi. Ideal: 18-21 SKS/semester.</p>` :
+                    `<p style="margin-top:10px;">✅ Beban SKS ideal!</p>`
+                }
+            </div>
+        </div>
+    `;
+
+    analysis.recommendations.forEach(rec => {
+        html += `
+            <div class="ai-section ${rec.type}">
+                <div class="ai-section-header">
+                    <div class="ai-section-icon"><i class="fa-solid ${rec.icon}"></i></div>
+                    <span>${rec.title}</span>
+                </div>
+                <div class="ai-section-content">
+                    <p>${rec.message}</p>
+                    ${rec.suggestions ? `<ul class="ai-list ${rec.type}">
+                        ${rec.suggestions.map(s => `<li>${s}</li>`).join('')}
+                    </ul>` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    html += `
+        <div class="ai-tip-box">
+            <i class="fa-solid fa-lightbulb"></i>
+            <div>
+                <div class="ai-tip-title">💡 Pro Tip</div>
+                <div class="ai-tip-text">
+                    Konsistensi = Kunci! Belajar rutin lebih efektif daripada SKS (Sistem Kebut Semalam). 📚✨
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('aiAnalysisContent').innerHTML = html;
+}
