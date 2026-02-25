@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPK Calculator - Hitung IP & IPK Kumulatif</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div class="particles-bg">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    <!-- Top Bar -->
+    <nav class="top-nav glass-effect">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fa-solid fa-graduation-cap glow-icon"></i>
+                <h1 class="gradient-text animate-float">IPK Calculator</h1>
+            </div>
+            <div class="nav-actions">
+                <button onclick="toggleTheme()" class="btn-icon glow-btn" title="Toggle Theme">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button onclick="exportPDF()" class="btn-icon glow-btn" title="Export PDF">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </button>
+                <button onclick="resetAll()" class="btn-icon glow-btn" title="Reset Semua">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Summary Card -->
+        <div class="summary-card glass-effect glow-card animate-slide-up">
+            <div class="summary-header">
+                <h2>📊 Ringkasan Akademik</h2>
+                <div class="pulse-dot"></div>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-item highlight shine-effect">
+                    <div class="summary-icon pulse-glow">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">IPK Kumulatif</span>
+                        <span class="summary-value gradient-text" id="totalIPK">0.00</span>
+                    </div>
+                </div>
+                <div class="summary-item shine-effect">
+                    <div class="summary-icon">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Total SKS</span>
+                        <span class="summary-value" id="totalSKS">0</span>
+                    </div>
+                </div>
+                <div class="summary-item shine-effect">
+                    <div class="summary-icon">
+                        <i class="fa-solid fa-calendar"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Total Semester</span>
+                        <span class="summary-value" id="totalSemesters">0</span>
+                    </div>
+                </div>
+                <div class="summary-item shine-effect">
+                    <div class="summary-icon">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Predikat</span>
+                        <span class="summary-value" id="predikat">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Semester Button -->
+        <div class="add-semester-section">
+            <button onclick="addSemester()" class="btn-add-semester ripple-effect">
+                <i class="fa-solid fa-plus rotate-on-hover"></i>
+                Tambah Semester Baru
+            </button>
+        </div>
+
+        <!-- Semesters List -->
+        <div id="semestersList"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <h3>Belum Ada Data</h3>
+            <p>Klik tombol "Tambah Semester Baru" untuk mulai menghitung IPK kamu!</p>
+        </div>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tambah Mata Kuliah</h3>
+                <button onclick="closeCourseModal()" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nama Mata Kuliah</label>
+                    <input type="text" id="courseName" placeholder="e.g., Kalkulus I">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SKS</label>
+                        <input type="number" id="courseSKS" min="1" max="6" placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Nilai</label>
+                        <select id="courseGrade">
+                            <option value="">Pilih Nilai</option>
+                            <option value="4.0">A (4.0)</option>
+                            <option value="3.7">A- (3.7)</option>
+                            <option value="3.3">B+ (3.3)</option>
+                            <option value="3.0">B (3.0)</option>
+                            <option value="2.7">B- (2.7)</option>
+                            <option value="2.3">C+ (2.3)</option>
+                            <option value="2.0">C (2.0)</option>
+                            <option value="1.7">C- (1.7)</option>
+                            <option value="1.3">D+ (1.3)</option>
+                            <option value="1.0">D (1.0)</option>
+                            <option value="0.0">E (0.0)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeCourseModal()" class="btn-secondary">Batal</button>
+                <button onclick="saveCourse()" class="btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
