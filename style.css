@@ -179,11 +179,15 @@ body {
 }
 
 .summary-value {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #ffffff !important; 
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); 
-    opacity: 1 !important; 
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;           
+    -webkit-text-fill-color: #ffffff !important; 
+    opacity: 1 !important;               
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; 
+    display: inline-block !important;
+    position: relative !important;
+    z-index: 10 !important;
 }
 
 /* Add Semester Section */
@@ -1090,4 +1094,10 @@ html {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+.summary-content * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
 }
