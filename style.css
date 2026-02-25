@@ -64,7 +64,8 @@ body {
 
 .nav-brand i {
     font-size: 1.75rem;
-    color: var(--primary);
+    color: #FFD700 !important; 
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
 }
 
 .nav-brand h1 {
