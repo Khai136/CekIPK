@@ -70,11 +70,9 @@ body {
 .nav-brand h1 {
     font-size: 1.5rem;
     font-weight: 800;
-    background: linear-gradient(135deg, var(--primary), #8b5cf6);
-    background-clip: text;              
-    -webkit-background-clip: text;      
-    color: transparent;                 
-    -webkit-text-fill-color: transparent;
+    color: #ffffff !important; 
+    background: none; 
+    -webkit-text-fill-color: #ffffff !important; 
 }
 
 .nav-actions {
@@ -128,7 +126,7 @@ body {
 }
 
 .summary-item {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.25); 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.25);
@@ -175,15 +173,16 @@ body {
 
 .summary-label {
     font-size: 0.875rem;
-    color: rgba(255,255,255,0.85);
-    font-weight: 500;
+    color: #ffffff;
+    font-weight: 600; 
+    opacity: 1 !important;
 }
 
 .summary-value {
-    font-size: 1.5rem;
+   font-size: 1.5rem;
     font-weight: 800;
-    color: #ffffff;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    color: #ffffff !important; 
+    text-shadow: 0 2px 15px rgba(0,0,0,0.3); 
 }
 
 /* Add Semester Section */
