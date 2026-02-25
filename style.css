@@ -140,9 +140,9 @@ body {
 }
 
 .summary-item.highlight {
-    background: rgba(99,102,241,0.22);
-    border: 1px solid rgba(255,255,255,0.35);
-    box-shadow: 0 8px 30px rgba(99,102,241,0.35);
+    background: rgba(49, 46, 129, 0.4); 
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 .summary-item:hover {
@@ -173,16 +173,17 @@ body {
 
 .summary-label {
     font-size: 0.875rem;
-    color: #ffffff;
-    font-weight: 600; 
-    opacity: 1 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    opacity: 0.9; 
 }
 
 .summary-value {
-   font-size: 1.5rem;
+    font-size: 1.5rem;
     font-weight: 800;
     color: #ffffff !important; 
-    text-shadow: 0 2px 15px rgba(0,0,0,0.3); 
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); 
+    opacity: 1 !important; 
 }
 
 /* Add Semester Section */
