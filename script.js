@@ -196,8 +196,8 @@ function calculateIPK() {
 // Get predikat
 function getPredikat(ipk) {
     if (ipk >= 3.75) return 'Cum Laude';
-    if (ipk >= 3.50) return 'Sangat Memuaskan';
-    if (ipk >= 3.00) return 'Memuaskan';
+    if (ipk >= 3.50) return 'Superior';
+    if (ipk >= 3.00) return 'gratify';
     if (ipk >= 2.00) return 'Lulus';
     if (ipk > 0) return 'Tidak Lulus';
     return '-';
