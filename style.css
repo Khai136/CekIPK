@@ -1102,265 +1102,224 @@ html {
     -webkit-text-fill-color: #ffffff !important;
     opacity: 1 !important;
 }
-/* ========================================
-   AI ANALYSIS FEATURES - ADDED
-   ======================================== */
-
-.btn-ai-analysis {
-    padding: 10px 20px;
+/* AI Button per Semester */
+.btn-ai {
     background: linear-gradient(135deg, #8b5cf6, #ec4899);
     color: white;
+}
+
+.btn-ai:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(139,92,246,0.4);
+}
+
+/* ========================================
+   QUICK STATS DASHBOARD
+   ======================================== */
+
+.quick-stats-card {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.stats-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.btn-close-stats {
+    background: var(--gray-100);
     border: none;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-close-stats:hover {
+    background: var(--gray-200);
+    transform: scale(1.1);
+}
+
+.stats-grid-quick {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.stat-quick {
+    background: var(--gray-50);
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s;
+}
+
+.stat-quick:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.stat-quick .stat-icon {
+    font-size: 2rem;
+}
+
+.stat-quick .stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-quick .stat-label {
     font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.stat-quick .stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.btn-show-stats {
+    padding: 18px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.125rem;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
     transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(139,92,246,0.4);
+    box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    margin-top: 15px;
+    width: 100%;
 }
 
-.btn-ai-analysis:hover {
+.btn-show-stats:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139,92,246,0.6);
+    box-shadow: 0 8px 25px rgba(59,130,246,0.4);
 }
 
-.btn-ai-analysis i {
-    animation: brain-pulse 2s ease-in-out infinite;
+/* ========================================
+   EDIT & NOTES BUTTONS
+   ======================================== */
+
+.btn-edit {
+    background: #3b82f6;
+    color: white;
 }
 
-@keyframes brain-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+.btn-edit:hover {
+    background: #2563eb;
 }
 
-.modal-large {
-    max-width: 800px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
+.btn-notes {
+    background: #8b5cf6;
+    color: white;
 }
 
-.modal-large .modal-body {
-    overflow-y: auto;
-    max-height: calc(90vh - 140px);
+.btn-notes:hover {
+    background: #7c3aed;
 }
 
-.ai-analysis-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.3s;
 }
 
-.ai-section {
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+}
+
+/* Semester Notes Display */
+.semester-notes-display {
     background: var(--gray-50);
-    padding: 20px;
-    border-radius: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
     border-left: 4px solid var(--primary);
 }
 
-.ai-section.warning {
-    border-left-color: var(--warning);
-    background: rgba(245,158,11,0.05);
-}
-
-.ai-section.success {
-    border-left-color: var(--success);
-    background: rgba(16,185,129,0.05);
-}
-
-.ai-section.danger {
-    border-left-color: var(--danger);
-    background: rgba(239,68,68,0.05);
-}
-
-.ai-section-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 15px;
-    font-size: 1.125rem;
-    font-weight: 700;
-}
-
-.ai-section-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--primary);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.25rem;
-}
-
-.ai-section.warning .ai-section-icon {
-    background: var(--warning);
-}
-
-.ai-section.success .ai-section-icon {
-    background: var(--success);
-}
-
-.ai-section.danger .ai-section-icon {
-    background: var(--danger);
-}
-
-.ai-section-content {
-    line-height: 1.8;
+.semester-notes-display .note-text {
     color: var(--gray-700);
-}
-
-.ai-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin: 15px 0;
-}
-
-.ai-stat-item {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.ai-stat-value {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--primary);
-    display: block;
-    margin-bottom: 5px;
-}
-
-.ai-stat-label {
-    font-size: 0.875rem;
-    color: var(--gray-600);
-}
-
-.ai-list {
-    list-style: none;
-    padding: 0;
-    margin: 15px 0;
-}
-
-.ai-list li {
-    padding: 10px 0 10px 30px;
-    position: relative;
     line-height: 1.6;
+    margin-bottom: 10px;
 }
 
-.ai-list li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    width: 24px;
-    height: 24px;
-    background: var(--success);
-    color: white;
-    border-radius: 50%;
+.semester-notes-display .note-tags {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.875rem;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
-.ai-list.warning li::before {
-    content: '!';
-    background: var(--warning);
-}
-
-.ai-badge {
-    display: inline-block;
-    padding: 6px 12px;
+.note-tag {
     background: var(--primary);
     color: white;
-    border-radius: 8px;
+    padding: 4px 12px;
+    border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 600;
-    margin: 5px 5px 5px 0;
 }
 
-.ai-badge.success {
-    background: var(--success);
+.semester-notes-display .note-lesson {
+    color: var(--gray-600);
+    font-style: italic;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--gray-200);
 }
 
-.ai-badge.warning {
-    background: var(--warning);
-}
-
-.ai-badge.danger {
-    background: var(--danger);
-}
-
-.ai-progress-bar {
-    height: 12px;
-    background: var(--gray-200);
-    border-radius: 999px;
-    overflow: hidden;
-    margin: 10px 0;
-}
-
-.ai-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--success), var(--primary));
-    border-radius: 999px;
-    transition: width 1s ease-out;
-}
-
-.ai-tip-box {
-    background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));
-    border: 2px solid var(--primary);
-    padding: 15px 20px;
-    border-radius: 12px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-top: 15px;
-}
-
-.ai-tip-box i {
-    font-size: 1.5rem;
-    color: var(--primary);
-}
-
-.ai-tip-title {
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 5px;
-}
-
-.ai-tip-text {
-    color: var(--gray-700);
-    line-height: 1.6;
-}
-
-.ai-loading {
-    text-align: center;
-    padding: 40px;
-}
-
-.ai-loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--gray-200);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-    .ai-stats-grid {
-        grid-template-columns: 1fr;
+    .stats-grid-quick {
+        grid-template-columns: repeat(2, 1fr);
     }
-    .btn-ai-analysis {
-        font-size: 0.75rem;
-        padding: 8px 16px;
+    
+    .add-semester-section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 }

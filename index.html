@@ -52,13 +52,7 @@
         <div class="summary-card glass-effect glow-card animate-slide-up">
             <div class="summary-header">
                 <h2>📊 Ringkasan Akademik</h2>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <button onclick="showAIAnalysis()" class="btn-ai-analysis">
-                        <i class="fa-solid fa-brain"></i>
-                        AI Analysis
-                    </button>
-                    <div class="pulse-dot"></div>
-                </div>
+                <div class="pulse-dot"></div>
             </div>
             <div class="summary-grid">
                 <div class="summary-item highlight shine-effect">
@@ -100,11 +94,53 @@
             </div>
         </div>
 
+        <!-- Quick Stats Dashboard -->
+        <div id="quickStats" class="quick-stats-card glass-effect glow-card" style="display: none;">
+            <div class="stats-header">
+                <h2>📈 Quick Stats</h2>
+                <button onclick="toggleQuickStats()" class="btn-close-stats">×</button>
+            </div>
+            <div class="stats-grid-quick">
+                <div class="stat-quick">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-content">
+                        <span class="stat-label">IP Tertinggi</span>
+                        <span class="stat-value" id="highestIP">-</span>
+                    </div>
+                </div>
+                <div class="stat-quick">
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-content">
+                        <span class="stat-label">IP Terendah</span>
+                        <span class="stat-value" id="lowestIP">-</span>
+                    </div>
+                </div>
+                <div class="stat-quick">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <span class="stat-label">IP Rata-rata</span>
+                        <span class="stat-value" id="avgIP">-</span>
+                    </div>
+                </div>
+                <div class="stat-quick">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Total Nilai A</span>
+                        <span class="stat-value" id="totalA">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Add Semester Button -->
         <div class="add-semester-section">
             <button onclick="addSemester()" class="btn-add-semester ripple-effect">
                 <i class="fa-solid fa-plus rotate-on-hover"></i>
                 Tambah Semester Baru
+            </button>
+            <button onclick="toggleQuickStats()" class="btn-show-stats">
+                <i class="fa-solid fa-chart-simple"></i>
+                Quick Stats
             </button>
         </div>
 
@@ -162,18 +198,73 @@
         </div>
     </div>
 
-    <!-- AI Analysis Modal -->
-    <div id="aiModal" class="modal">
-        <div class="modal-content modal-large">
+    <!-- Edit Course Modal -->
+    <div id="editCourseModal" class="modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-brain"></i> AI Smart Analysis</h3>
-                <button onclick="closeAIModal()" class="btn-close">×</button>
+                <h3>Edit Mata Kuliah</h3>
+                <button onclick="closeEditCourseModal()" class="btn-close">×</button>
             </div>
             <div class="modal-body">
-                <div id="aiAnalysisContent" class="ai-analysis-content"></div>
+                <div class="form-group">
+                    <label>Nama Mata Kuliah</label>
+                    <input type="text" id="editCourseName" placeholder="e.g., Kalkulus I">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SKS</label>
+                        <input type="number" id="editCourseSKS" min="1" max="6" placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Nilai</label>
+                        <select id="editCourseGrade">
+                            <option value="">Pilih Nilai</option>
+                            <option value="4.0">A (4.0)</option>
+                            <option value="3.7">A- (3.7)</option>
+                            <option value="3.3">B+ (3.3)</option>
+                            <option value="3.0">B (3.0)</option>
+                            <option value="2.7">B- (2.7)</option>
+                            <option value="2.3">C+ (2.3)</option>
+                            <option value="2.0">C (2.0)</option>
+                            <option value="1.7">C- (1.7)</option>
+                            <option value="1.3">D+ (1.3)</option>
+                            <option value="1.0">D (1.0)</option>
+                            <option value="0.0">E (0.0)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button onclick="closeAIModal()" class="btn-secondary">Tutup</button>
+                <button onclick="closeEditCourseModal()" class="btn-secondary">Batal</button>
+                <button onclick="saveEditCourse()" class="btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Semester Notes Modal -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Catatan Semester <span id="notesSemesterNum"></span></h3>
+                <button onclick="closeNotesModal()" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>📝 Catatan</label>
+                    <textarea id="semesterNote" rows="4" placeholder="Tulis catatan tentang semester ini..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Tags (pisahkan dengan koma)</label>
+                    <input type="text" id="semesterTags" placeholder="produktif, organisasi, challenging">
+                </div>
+                <div class="form-group">
+                    <label>💡 Lesson Learned</label>
+                    <textarea id="semesterLesson" rows="3" placeholder="Apa yang dipelajari dari semester ini?"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeNotesModal()" class="btn-secondary">Batal</button>
+                <button onclick="saveSemesterNotes()" class="btn-primary">Simpan</button>
             </div>
         </div>
     </div>

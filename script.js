@@ -252,6 +252,9 @@ function renderSemesters() {
                         </span>
                     </div>
                     <div class="semester-actions">
+                        <button onclick="showSemesterAI(${index})" class="btn-small btn-ai">
+                            <i class="fa-solid fa-brain"></i> AI
+                        </button>
                         <button onclick="openCourseModal(${index})" class="btn-small btn-add">
                             <i class="fa-solid fa-plus"></i> Tambah MK
                         </button>
@@ -453,350 +456,408 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 // ========================================
-// AI SMART ANALYSIS - ADDED
+// AI ANALYSIS PER SEMESTER
 // ========================================
 
-class AIAnalyzer {
-    constructor(semesters) {
-        this.semesters = semesters;
-    }
-
-    analyzeTrend() {
-        if (this.semesters.length < 2) return { trend: 'insufficient_data', direction: 'neutral' };
-        const ips = this.semesters.map(s => parseFloat(s.ip));
-        let increases = 0, decreases = 0;
-        for (let i = 1; i < ips.length; i++) {
-            if (ips[i] > ips[i-1]) increases++;
-            else if (ips[i] < ips[i-1]) decreases++;
-        }
-        if (increases > decreases) return { trend: 'improving', direction: 'up', strength: increases };
-        if (decreases > increases) return { trend: 'declining', direction: 'down', strength: decreases };
-        return { trend: 'stable', direction: 'neutral' };
-    }
-
-    findProblematicSemester() {
-        if (this.semesters.length < 2) return null;
-        let worstSem = this.semesters[0];
-        let worstIP = parseFloat(worstSem.ip);
-        this.semesters.forEach(sem => {
-            const ip = parseFloat(sem.ip);
-            if (ip < worstIP && ip > 0) {
-                worstIP = ip;
-                worstSem = sem;
-            }
-        });
-        return worstSem;
-    }
-
-    findBestSemester() {
-        if (this.semesters.length === 0) return null;
-        let bestSem = this.semesters[0];
-        let bestIP = parseFloat(bestSem.ip);
-        this.semesters.forEach(sem => {
-            const ip = parseFloat(sem.ip);
-            if (ip > bestIP) {
-                bestIP = ip;
-                bestSem = sem;
-            }
-        });
-        return bestSem;
-    }
-
-    analyzeSKSLoad() {
-        const avgSKS = this.semesters.reduce((sum, s) => sum + s.totalSKS, 0) / this.semesters.length;
-        const maxSKS = Math.max(...this.semesters.map(s => s.totalSKS));
-        const minSKS = Math.min(...this.semesters.map(s => s.totalSKS));
-        return { avgSKS: avgSKS.toFixed(1), maxSKS, minSKS };
-    }
-
-    analyzeGrades() {
-        const gradeCounts = { A: 0, B: 0, C: 0, D: 0, E: 0 };
-        let totalCourses = 0;
-        this.semesters.forEach(sem => {
-            sem.courses.forEach(course => {
-                totalCourses++;
-                if (course.grade >= 3.5) gradeCounts.A++;
-                else if (course.grade >= 2.5) gradeCounts.B++;
-                else if (course.grade >= 1.5) gradeCounts.C++;
-                else if (course.grade >= 1.0) gradeCounts.D++;
-                else gradeCounts.E++;
-            });
-        });
-        return {
-            A: ((gradeCounts.A / totalCourses) * 100).toFixed(1),
-            B: ((gradeCounts.B / totalCourses) * 100).toFixed(1),
-            C: ((gradeCounts.C / totalCourses) * 100).toFixed(1),
-            D: ((gradeCounts.D / totalCourses) * 100).toFixed(1),
-            E: ((gradeCounts.E / totalCourses) * 100).toFixed(1),
-            total: totalCourses
-        };
-    }
-
-    generateRecommendations() {
-        const result = calculateIPK();
-        const ipk = parseFloat(result.ipk);
-        const trend = this.analyzeTrend();
-        const sksLoad = this.analyzeSKSLoad();
-        const grades = this.analyzeGrades();
-        const recommendations = [];
-
-        if (ipk >= 3.75) {
-            recommendations.push({
-                type: 'success',
-                icon: 'fa-trophy',
-                title: 'Excellent Performance! 🏆',
-                message: 'IPK kamu sudah Cum Laude level! Pertahankan konsistensi ini sampai akhir.'
-            });
-        } else if (ipk >= 3.50) {
-            recommendations.push({
-                type: 'success',
-                icon: 'fa-star',
-                title: 'Great Job! ⭐',
-                message: `IPK kamu ${ipk}, tinggal ${(3.75 - ipk).toFixed(2)} lagi untuk Cum Laude!`
-            });
-        } else if (ipk >= 3.00) {
-            recommendations.push({
-                type: 'warning',
-                icon: 'fa-chart-line',
-                title: 'Good Progress 📈',
-                message: `IPK kamu ${ipk}. Fokus naikkan ke 3.5+ untuk predikat lebih baik.`
-            });
-        } else if (ipk > 0) {
-            recommendations.push({
-                type: 'danger',
-                icon: 'fa-exclamation-triangle',
-                title: 'Perlu Perhatian! ⚠️',
-                message: `IPK ${ipk} perlu ditingkatkan. Focus, konsisten, dan jangan menyerah!`
-            });
-        }
-
-        if (trend.direction === 'down') {
-            recommendations.push({
-                type: 'warning',
-                icon: 'fa-arrow-trend-down',
-                title: 'IP Menurun',
-                message: `IP kamu turun di ${trend.strength} semester terakhir.`,
-                suggestions: [
-                    'Kurangi beban SKS semester depan (max 20 SKS)',
-                    'Identifikasi mata kuliah sulit dan fokus di sana',
-                    'Join study group atau cari tutor',
-                    'Atur jadwal belajar lebih terstruktur'
-                ]
-            });
-        } else if (trend.direction === 'up') {
-            recommendations.push({
-                type: 'success',
-                icon: 'fa-arrow-trend-up',
-                title: 'Tren Positif! 📈',
-                message: `IP kamu naik di ${trend.strength} semester terakhir. Pertahankan!`
-            });
-        }
-
-        if (sksLoad.maxSKS > 24) {
-            recommendations.push({
-                type: 'warning',
-                icon: 'fa-book',
-                title: 'Beban SKS Terlalu Tinggi',
-                message: `Max SKS kamu ${sksLoad.maxSKS} - terlalu banyak! Ideal: 18-21 SKS.`,
-                suggestions: [
-                    'Kurangi SKS semester depan jadi 18-21 SKS',
-                    'Prioritas kualitas daripada kuantitas'
-                ]
-            });
-        }
-
-        if (parseFloat(grades.C) > 20 || parseFloat(grades.D) > 5) {
-            recommendations.push({
-                type: 'warning',
-                icon: 'fa-chart-pie',
-                title: 'Distribusi Nilai Perlu Diperbaiki',
-                message: `${grades.C}% nilai C dan ${grades.D}% nilai D.`,
-                suggestions: [
-                    'Fokus di 3-4 mata kuliah inti per semester',
-                    'Mulai belajar dari awal, jangan SKS (Sistem Kebut Semalam)',
-                    'Aktif bertanya ke dosen saat tidak paham'
-                ]
-            });
-        } else if (parseFloat(grades.A) > 60) {
-            recommendations.push({
-                type: 'success',
-                icon: 'fa-medal',
-                title: 'Distribusi Nilai Excellent!',
-                message: `${grades.A}% nilai A/A- - Luar biasa konsisten!`
-            });
-        }
-
-        return recommendations;
-    }
-
-    analyze() {
-        if (this.semesters.length === 0) {
-            return { status: 'no_data', message: 'Belum ada data untuk dianalisis.' };
-        }
-        return {
-            status: 'success',
-            trend: this.analyzeTrend(),
-            sksLoad: this.analyzeSKSLoad(),
-            grades: this.analyzeGrades(),
-            recommendations: this.generateRecommendations(),
-            worstSem: this.findProblematicSemester(),
-            bestSem: this.findBestSemester()
-        };
-    }
-}
-
-function showAIAnalysis() {
-    console.log('🤖 AI Analysis button clicked');
-    console.log('Semesters data:', semesters);
+function showSemesterAI(semesterIndex) {
+    const semester = semesters[semesterIndex];
     
-    if (semesters.length === 0) {
-        alert('Belum ada data!\n\nTambahkan semester dan mata kuliah dulu.');
+    if (semester.courses.length === 0) {
+        alert('Semester ini belum ada mata kuliah!\n\nTambahkan mata kuliah dulu.');
         return;
     }
     
-    document.getElementById('aiModal').classList.add('show');
-    document.getElementById('aiAnalysisContent').innerHTML = `
-        <div class="ai-loading">
-            <div class="ai-loading-spinner"></div>
-            <p>AI sedang menganalisis data kamu...</p>
-        </div>
-    `;
+    // Analyze grades
+    const gradeCounts = { A: 0, B: 0, C: 0, D: 0 };
+    let totalCourses = semester.courses.length;
     
-    setTimeout(() => {
-        try {
-            console.log('🧠 Starting AI analysis...');
-            const analyzer = new AIAnalyzer(semesters);
-            const analysis = analyzer.analyze();
-            console.log('✅ Analysis result:', analysis);
-            
-            if (analysis.status === 'no_data') {
-                document.getElementById('aiAnalysisContent').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fa-solid fa-inbox"></i>
-                        <h3>Belum Ada Data</h3>
-                        <p>${analysis.message}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            renderAIAnalysis(analysis);
-            console.log('✅ AI analysis rendered successfully');
-        } catch (error) {
-            console.error('❌ AI Analysis Error:', error);
-            document.getElementById('aiAnalysisContent').innerHTML = `
-                <div class="empty-state">
-                    <i class="fa-solid fa-exclamation-triangle"></i>
-                    <h3>Error</h3>
-                    <p>Terjadi kesalahan saat menganalisis data. Coba lagi.</p>
-                    <p style="font-size: 0.875rem; color: red; margin-top: 10px;">${error.message}</p>
-                </div>
-            `;
-        }
-    }, 1500);
-}
-
-function closeAIModal() {
-    document.getElementById('aiModal').classList.remove('show');
-}
-
-function renderAIAnalysis(analysis) {
-    const result = calculateIPK();
-    const ipk = parseFloat(result.ipk);
-    let html = `
-        <div class="ai-section ${ipk >= 3.5 ? 'success' : ipk >= 3.0 ? 'warning' : 'danger'}">
-            <div class="ai-section-header">
-                <div class="ai-section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                <span>Status Akademik</span>
-            </div>
-            <div class="ai-section-content">
-                <div class="ai-stats-grid">
-                    <div class="ai-stat-item">
-                        <span class="ai-stat-value">${result.ipk}</span>
-                        <span class="ai-stat-label">IPK</span>
-                    </div>
-                    <div class="ai-stat-item">
-                        <span class="ai-stat-value">${result.totalSKS}</span>
-                        <span class="ai-stat-label">SKS</span>
-                    </div>
-                    <div class="ai-stat-item">
-                        <span class="ai-stat-value">${result.predikat}</span>
-                        <span class="ai-stat-label">Predikat</span>
-                    </div>
-                </div>
-                ${ipk < 3.75 ? `
-                    <div class="ai-progress-bar">
-                        <div class="ai-progress-fill" style="width: ${(ipk / 4.0) * 100}%"></div>
-                    </div>
-                    <p style="text-align: center; margin-top: 8px; font-size: 0.875rem;">
-                        Progress ke Cum Laude: ${((ipk / 3.75) * 100).toFixed(1)}%
-                    </p>
-                ` : ''}
-            </div>
-        </div>
-    `;
-
-    if (analysis.trend.direction !== 'neutral') {
-        html += `
-            <div class="ai-section ${analysis.trend.direction === 'up' ? 'success' : 'warning'}">
-                <div class="ai-section-header">
-                    <div class="ai-section-icon">
-                        <i class="fa-solid fa-chart-${analysis.trend.direction === 'up' ? 'line' : 'line-down'}"></i>
-                    </div>
-                    <span>Tren Performa</span>
-                </div>
-                <div class="ai-section-content">
-                    <p>${analysis.trend.direction === 'up' ? 
-                        `✅ IP NAIK di ${analysis.trend.strength} semester terakhir!` :
-                        `⚠️ IP TURUN di ${analysis.trend.strength} semester terakhir.`
-                    }</p>
-                </div>
-            </div>
-        `;
+    semester.courses.forEach(course => {
+        if (course.grade >= 3.5) gradeCounts.A++;
+        else if (course.grade >= 2.5) gradeCounts.B++;
+        else if (course.grade >= 1.5) gradeCounts.C++;
+        else gradeCounts.D++;
+    });
+    
+    const percentA = ((gradeCounts.A / totalCourses) * 100).toFixed(0);
+    const percentB = ((gradeCounts.B / totalCourses) * 100).toFixed(0);
+    const percentC = ((gradeCounts.C / totalCourses) * 100).toFixed(0);
+    const percentD = ((gradeCounts.D / totalCourses) * 100).toFixed(0);
+    
+    // Performance level
+    const ip = parseFloat(semester.ip);
+    let performance = '';
+    let performanceIcon = '';
+    let tips = [];
+    
+    if (ip >= 3.75) {
+        performance = 'EXCELLENT! 🏆';
+        performanceIcon = '🌟';
+        tips = [
+            'IP sempurna! Pertahankan konsistensi ini',
+            'Kamu adalah role model untuk teman-teman',
+            'Jaga keseimbangan antara akademik dan kesehatan'
+        ];
+    } else if (ip >= 3.50) {
+        performance = 'GREAT! ⭐';
+        performanceIcon = '💪';
+        tips = [
+            'Tinggal sedikit lagi untuk IP 3.75+',
+            'Fokus di mata kuliah yang masih bisa ditingkatkan',
+            'Pertahankan pola belajar yang sudah berhasil'
+        ];
+    } else if (ip >= 3.00) {
+        performance = 'GOOD 👍';
+        performanceIcon = '📈';
+        tips = [
+            'IP sudah bagus, tapi bisa lebih baik',
+            'Identifikasi mata kuliah yang bisa dipush',
+            'Tingkatkan konsistensi belajar'
+        ];
+    } else if (ip >= 2.50) {
+        performance = 'NEED IMPROVEMENT ⚠️';
+        performanceIcon = '💡';
+        tips = [
+            'Semester ini perlu perhatian khusus',
+            'Fokus di 3-4 mata kuliah inti',
+            'Jangan ragu minta bantuan dosen/teman'
+        ];
+    } else {
+        performance = 'CRITICAL! ⚠️';
+        performanceIcon = '🚨';
+        tips = [
+            'Butuh action plan segera!',
+            'Kurangi beban SKS semester depan',
+            'Konsultasi dengan dosen pembimbing akademik'
+        ];
     }
+    
+    // SKS Analysis
+    let sksComment = '';
+    if (semester.totalSKS > 24) {
+        sksComment = '⚠️ Beban SKS terlalu tinggi! Ideal: 18-21 SKS';
+    } else if (semester.totalSKS >= 18 && semester.totalSKS <= 21) {
+        sksComment = '✅ Beban SKS ideal untuk performa optimal';
+    } else if (semester.totalSKS < 18) {
+        sksComment = '💡 SKS cukup ringan, bisa tambah 1-2 MK';
+    } else {
+        sksComment = '👍 Beban SKS cukup baik';
+    }
+    
+    // Grade distribution comment
+    let gradeComment = '';
+    if (percentA >= 70) {
+        gradeComment = '🌟 Distribusi nilai sangat bagus! Mayoritas A/A-';
+    } else if (percentA >= 50) {
+        gradeComment = '👍 Distribusi nilai bagus, tapi bisa lebih optimal';
+    } else if (percentC > 30 || percentD > 10) {
+        gradeComment = '⚠️ Terlalu banyak nilai C/D. Perlu strategi belajar baru';
+    } else {
+        gradeComment = '💡 Distribusi nilai cukup, ada ruang untuk improvement';
+    }
+    
+    // Build message
+    let message = `
+━━━━━━━━━━━━━━━━━━━━━
+🧠 AI ANALYSIS
+SEMESTER ${semester.number}
+━━━━━━━━━━━━━━━━━━━━━
 
-    html += `
-        <div class="ai-section">
-            <div class="ai-section-header">
-                <div class="ai-section-icon"><i class="fa-solid fa-chart-pie"></i></div>
-                <span>Distribusi Nilai</span>
-            </div>
-            <div class="ai-section-content">
-                <div style="margin: 10px 0;">
-                    <span class="ai-badge success">A: ${analysis.grades.A}%</span>
-                    <span class="ai-badge">B: ${analysis.grades.B}%</span>
-                    <span class="ai-badge warning">C: ${analysis.grades.C}%</span>
-                </div>
-            </div>
-        </div>
-    `;
+${performanceIcon} PERFORMANCE: ${performance}
 
-    analysis.recommendations.forEach(rec => {
+📊 STATISTIK:
+• IP Semester: ${ip}
+• Total SKS: ${semester.totalSKS}
+• Total Mata Kuliah: ${totalCourses}
+
+📈 DISTRIBUSI NILAI:
+• A/A-: ${percentA}% (${gradeCounts.A} MK)
+• B: ${percentB}% (${gradeCounts.B} MK)
+• C: ${percentC}% (${gradeCounts.C} MK)
+${gradeCounts.D > 0 ? `• D: ${percentD}% (${gradeCounts.D} MK)` : ''}
+
+${gradeComment}
+
+📚 BEBAN SKS:
+${sksComment}
+
+💡 REKOMENDASI:
+${tips.map((tip, i) => `${i + 1}. ${tip}`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━━
+Generated by Gradify AI ✨
+━━━━━━━━━━━━━━━━━━━━━
+    `.trim();
+    
+    alert(message);
+}
+
+// ========================================
+// FEATURE 1: QUICK STATS DASHBOARD
+// ========================================
+
+function toggleQuickStats() {
+    const statsCard = document.getElementById('quickStats');
+    if (statsCard.style.display === 'none' || !statsCard.style.display) {
+        calculateQuickStats();
+        statsCard.style.display = 'block';
+    } else {
+        statsCard.style.display = 'none';
+    }
+}
+
+function calculateQuickStats() {
+    if (semesters.length === 0) {
+        alert('Belum ada data untuk ditampilkan!');
+        return;
+    }
+    
+    // Calculate stats
+    const ips = semesters.map(s => parseFloat(s.ip)).filter(ip => ip > 0);
+    const highestIP = Math.max(...ips);
+    const lowestIP = Math.min(...ips);
+    const avgIP = (ips.reduce((a, b) => a + b, 0) / ips.length).toFixed(2);
+    
+    // Count A grades
+    let totalA = 0;
+    let totalCourses = 0;
+    semesters.forEach(sem => {
+        sem.courses.forEach(course => {
+            totalCourses++;
+            if (course.grade >= 3.5) totalA++;
+        });
+    });
+    
+    const percentA = totalCourses > 0 ? ((totalA / totalCourses) * 100).toFixed(0) : 0;
+    
+    // Find which semester
+    const highestSem = semesters.find(s => parseFloat(s.ip) === highestIP);
+    const lowestSem = semesters.find(s => parseFloat(s.ip) === lowestIP);
+    
+    // Update display
+    document.getElementById('highestIP').textContent = `${highestIP} (Sem ${highestSem.number})`;
+    document.getElementById('lowestIP').textContent = `${lowestIP} (Sem ${lowestSem.number})`;
+    document.getElementById('avgIP').textContent = avgIP;
+    document.getElementById('totalA').textContent = `${totalA} (${percentA}%)`;
+}
+
+// ========================================
+// FEATURE 2: EDIT MATA KULIAH
+// ========================================
+
+let editingSemesterIndex = null;
+let editingCourseIndex = null;
+
+function openEditCourseModal(semesterIndex, courseIndex) {
+    editingSemesterIndex = semesterIndex;
+    editingCourseIndex = courseIndex;
+    
+    const course = semesters[semesterIndex].courses[courseIndex];
+    
+    document.getElementById('editCourseName').value = course.name;
+    document.getElementById('editCourseSKS').value = course.sks;
+    document.getElementById('editCourseGrade').value = course.grade.toFixed(1);
+    
+    document.getElementById('editCourseModal').classList.add('show');
+    document.getElementById('editCourseName').focus();
+}
+
+function closeEditCourseModal() {
+    document.getElementById('editCourseModal').classList.remove('show');
+    editingSemesterIndex = null;
+    editingCourseIndex = null;
+}
+
+function saveEditCourse() {
+    const name = document.getElementById('editCourseName').value.trim();
+    const sks = parseInt(document.getElementById('editCourseSKS').value);
+    const grade = parseFloat(document.getElementById('editCourseGrade').value);
+    
+    // Validation
+    if (!name) {
+        alert('Nama mata kuliah harus diisi!');
+        return;
+    }
+    
+    if (!sks || sks < 1 || sks > 6) {
+        alert('SKS harus antara 1-6!');
+        return;
+    }
+    
+    if (grade === '' || isNaN(grade)) {
+        alert('Pilih nilai mata kuliah!');
+        return;
+    }
+    
+    // Update course
+    semesters[editingSemesterIndex].courses[editingCourseIndex] = {
+        id: semesters[editingSemesterIndex].courses[editingCourseIndex].id,
+        name: name,
+        sks: sks,
+        grade: grade,
+        gradeLetter: gradeMap[grade.toFixed(1)]
+    };
+    
+    // Recalculate IP
+    calculateSemesterIP(editingSemesterIndex);
+    
+    saveData();
+    render();
+    closeEditCourseModal();
+    
+    showNotification('Mata kuliah berhasil diupdate!', 'success');
+}
+
+// ========================================
+// FEATURE 3: SEMESTER NOTES & TAGS
+// ========================================
+
+let editingNotesSemesterIndex = null;
+
+function openNotesModal(semesterIndex) {
+    editingNotesSemesterIndex = semesterIndex;
+    const semester = semesters[semesterIndex];
+    
+    document.getElementById('notesSemesterNum').textContent = semester.number;
+    
+    // Load existing notes if any
+    document.getElementById('semesterNote').value = semester.note || '';
+    document.getElementById('semesterTags').value = semester.tags ? semester.tags.join(', ') : '';
+    document.getElementById('semesterLesson').value = semester.lesson || '';
+    
+    document.getElementById('notesModal').classList.add('show');
+    document.getElementById('semesterNote').focus();
+}
+
+function closeNotesModal() {
+    document.getElementById('notesModal').classList.remove('show');
+    editingNotesSemesterIndex = null;
+}
+
+function saveSemesterNotes() {
+    const note = document.getElementById('semesterNote').value.trim();
+    const tagsStr = document.getElementById('semesterTags').value.trim();
+    const lesson = document.getElementById('semesterLesson').value.trim();
+    
+    // Parse tags
+    const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+    
+    // Save to semester
+    semesters[editingNotesSemesterIndex].note = note;
+    semesters[editingNotesSemesterIndex].tags = tags;
+    semesters[editingNotesSemesterIndex].lesson = lesson;
+    
+    saveData();
+    render();
+    closeNotesModal();
+    
+    showNotification('Catatan semester berhasil disimpan!', 'success');
+}
+
+// Update renderSemesters to include edit buttons and notes display
+const originalRenderSemesters = renderSemesters;
+renderSemesters = function() {
+    const container = document.getElementById('semestersList');
+    const emptyState = document.getElementById('emptyState');
+    
+    if (semesters.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+    }
+    
+    emptyState.style.display = 'none';
+    
+    let html = '';
+    
+    semesters.forEach((semester, index) => {
         html += `
-            <div class="ai-section ${rec.type}">
-                <div class="ai-section-header">
-                    <div class="ai-section-icon"><i class="fa-solid ${rec.icon}"></i></div>
-                    <span>${rec.title}</span>
+            <div class="semester-card">
+                <div class="semester-header">
+                    <div class="semester-title">
+                        <h3>📝 Semester ${semester.number}</h3>
+                    </div>
+                    <div class="semester-stats">
+                        <span>
+                            <i class="fa-solid fa-chart-line"></i>
+                            IP: <span class="ip-value">${semester.ip}</span>
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-book"></i>
+                            SKS: ${semester.totalSKS}
+                        </span>
+                    </div>
+                    <div class="semester-actions">
+                        <button onclick="showSemesterAI(${index})" class="btn-small btn-ai">
+                            <i class="fa-solid fa-brain"></i> AI
+                        </button>
+                        <button onclick="openNotesModal(${index})" class="btn-small btn-notes">
+                            <i class="fa-solid fa-note-sticky"></i> Notes
+                        </button>
+                        <button onclick="openCourseModal(${index})" class="btn-small btn-add">
+                            <i class="fa-solid fa-plus"></i> Tambah MK
+                        </button>
+                        <button onclick="deleteSemester(${index})" class="btn-small btn-delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="ai-section-content">
-                    <p>${rec.message}</p>
-                    ${rec.suggestions ? `<ul class="ai-list ${rec.type}">
-                        ${rec.suggestions.slice(0, 3).map(s => `<li>${s}</li>`).join('')}
-                    </ul>` : ''}
-                </div>
+                
+                ${(semester.note || semester.tags || semester.lesson) ? `
+                    <div class="semester-notes-display">
+                        ${semester.note ? `<div class="note-text">📝 ${semester.note}</div>` : ''}
+                        ${semester.tags && semester.tags.length > 0 ? `
+                            <div class="note-tags">
+                                ${semester.tags.map(tag => `<span class="note-tag">#${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        ${semester.lesson ? `<div class="note-lesson">💡 ${semester.lesson}</div>` : ''}
+                    </div>
+                ` : ''}
+                
+                ${semester.courses.length > 0 ? `
+                    <table class="courses-table">
+                        <thead>
+                            <tr>
+                                <th>Mata Kuliah</th>
+                                <th style="text-align: center;">SKS</th>
+                                <th style="text-align: center;">Nilai</th>
+                                <th style="text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${semester.courses.map((course, courseIndex) => `
+                                <tr>
+                                    <td class="course-name">${course.name}</td>
+                                    <td style="text-align: center;">${course.sks}</td>
+                                    <td style="text-align: center;" class="course-grade">
+                                        ${course.gradeLetter} (${course.grade.toFixed(1)})
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <button onclick="openEditCourseModal(${index}, ${courseIndex})" class="btn-delete-course" style="color: #3b82f6; margin-right: 8px;" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button onclick="deleteCourse(${index}, ${courseIndex})" class="btn-delete-course" title="Delete">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                ` : `
+                    <div class="empty-state" style="padding: 40px 20px;">
+                        <i class="fa-solid fa-book-open" style="font-size: 3rem;"></i>
+                        <p style="margin-top: 10px; color: var(--gray-500);">
+                            Belum ada mata kuliah. Klik "Tambah MK" untuk menambahkan.
+                        </p>
+                    </div>
+                `}
             </div>
         `;
     });
+    
+    container.innerHTML = html;
+};
 
-    html += `
-        <div class="ai-tip-box">
-            <i class="fa-solid fa-lightbulb"></i>
-            <div>
-                <div class="ai-tip-title">💡 Tip</div>
-                <div class="ai-tip-text">Belajar rutin > SKS (Sistem Kebut Semalam) 📚</div>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('aiAnalysisContent').innerHTML = html;
-}
+// Call updated render on load
+render();
