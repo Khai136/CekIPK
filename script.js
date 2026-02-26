@@ -685,17 +685,17 @@ function renderAIAnalysis(analysis) {
         <div class="ai-section ${ipk >= 3.5 ? 'success' : ipk >= 3.0 ? 'warning' : 'danger'}">
             <div class="ai-section-header">
                 <div class="ai-section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                <span>Status Akademik Overall</span>
+                <span>Status Akademik</span>
             </div>
             <div class="ai-section-content">
                 <div class="ai-stats-grid">
                     <div class="ai-stat-item">
                         <span class="ai-stat-value">${result.ipk}</span>
-                        <span class="ai-stat-label">IPK Kumulatif</span>
+                        <span class="ai-stat-label">IPK</span>
                     </div>
                     <div class="ai-stat-item">
                         <span class="ai-stat-value">${result.totalSKS}</span>
-                        <span class="ai-stat-label">Total SKS</span>
+                        <span class="ai-stat-label">SKS</span>
                     </div>
                     <div class="ai-stat-item">
                         <span class="ai-stat-value">${result.predikat}</span>
@@ -706,7 +706,7 @@ function renderAIAnalysis(analysis) {
                     <div class="ai-progress-bar">
                         <div class="ai-progress-fill" style="width: ${(ipk / 4.0) * 100}%"></div>
                     </div>
-                    <p style="text-align: center; margin-top: 10px;">
+                    <p style="text-align: center; margin-top: 8px; font-size: 0.875rem;">
                         Progress ke Cum Laude: ${((ipk / 3.75) * 100).toFixed(1)}%
                     </p>
                 ` : ''}
@@ -714,7 +714,7 @@ function renderAIAnalysis(analysis) {
         </div>
     `;
 
-    if (analysis.trend.direction !== 'neutral') {
+    if (analysis.trend.direction !== 'neutral' && analysis.semesters.length >= 2) {
         html += `
             <div class="ai-section ${analysis.trend.direction === 'up' ? 'success' : 'warning'}">
                 <div class="ai-section-header">
@@ -725,11 +725,9 @@ function renderAIAnalysis(analysis) {
                 </div>
                 <div class="ai-section-content">
                     <p>${analysis.trend.direction === 'up' ? 
-                        `✅ IP menunjukkan tren NAIK di ${analysis.trend.strength} semester terakhir!` :
-                        `⚠️ IP menunjukkan tren TURUN di ${analysis.trend.strength} semester terakhir.`
+                        `✅ IP NAIK di ${analysis.trend.strength} semester terakhir!` :
+                        `⚠️ IP TURUN di ${analysis.trend.strength} semester terakhir.`
                     }</p>
-                    ${analysis.bestSem ? `<p style="margin-top:10px;"><strong>IP Tertinggi:</strong> ${analysis.bestSem.ip} (Sem ${analysis.bestSem.number})</p>` : ''}
-                    ${analysis.worstSem ? `<p><strong>IP Terendah:</strong> ${analysis.worstSem.ip} (Sem ${analysis.worstSem.number})</p>` : ''}
                 </div>
             </div>
         `;
@@ -742,29 +740,11 @@ function renderAIAnalysis(analysis) {
                 <span>Distribusi Nilai</span>
             </div>
             <div class="ai-section-content">
-                <p>Dari <strong>${analysis.grades.total}</strong> mata kuliah:</p>
-                <div style="margin: 15px 0;">
-                    <span class="ai-badge success">A/A-: ${analysis.grades.A}%</span>
+                <div style="margin: 10px 0;">
+                    <span class="ai-badge success">A: ${analysis.grades.A}%</span>
                     <span class="ai-badge">B: ${analysis.grades.B}%</span>
                     <span class="ai-badge warning">C: ${analysis.grades.C}%</span>
-                    ${parseFloat(analysis.grades.D) > 0 ? `<span class="ai-badge danger">D: ${analysis.grades.D}%</span>` : ''}
                 </div>
-            </div>
-        </div>
-    `;
-
-    html += `
-        <div class="ai-section">
-            <div class="ai-section-header">
-                <div class="ai-section-icon"><i class="fa-solid fa-book-open"></i></div>
-                <span>Beban SKS</span>
-            </div>
-            <div class="ai-section-content">
-                <p><strong>Rata-rata:</strong> ${analysis.sksLoad.avgSKS} SKS | <strong>Max:</strong> ${analysis.sksLoad.maxSKS} SKS</p>
-                ${parseFloat(analysis.sksLoad.avgSKS) > 21 ? 
-                    `<p style="margin-top:10px;">⚠️ Beban SKS tinggi. Ideal: 18-21 SKS/semester.</p>` :
-                    `<p style="margin-top:10px;">✅ Beban SKS ideal!</p>`
-                }
             </div>
         </div>
     `;
@@ -779,7 +759,7 @@ function renderAIAnalysis(analysis) {
                 <div class="ai-section-content">
                     <p>${rec.message}</p>
                     ${rec.suggestions ? `<ul class="ai-list ${rec.type}">
-                        ${rec.suggestions.map(s => `<li>${s}</li>`).join('')}
+                        ${rec.suggestions.slice(0, 3).map(s => `<li>${s}</li>`).join('')}
                     </ul>` : ''}
                 </div>
             </div>
@@ -790,10 +770,8 @@ function renderAIAnalysis(analysis) {
         <div class="ai-tip-box">
             <i class="fa-solid fa-lightbulb"></i>
             <div>
-                <div class="ai-tip-title">💡 Pro Tip</div>
-                <div class="ai-tip-text">
-                    Konsistensi = Kunci! Belajar rutin lebih efektif daripada SKS (Sistem Kebut Semalam). 📚✨
-                </div>
+                <div class="ai-tip-title">💡 Tip</div>
+                <div class="ai-tip-text">Belajar rutin > SKS (Sistem Kebut Semalam) 📚</div>
             </div>
         </div>
     `;

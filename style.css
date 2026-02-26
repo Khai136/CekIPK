@@ -1138,6 +1138,14 @@ html {
 
 .modal-large {
     max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-large .modal-body {
+    overflow-y: auto;
+    max-height: calc(90vh - 140px);
 }
 
 .ai-analysis-content {
