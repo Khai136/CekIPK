@@ -646,10 +646,14 @@ class AIAnalyzer {
 }
 
 function showAIAnalysis() {
+    console.log('🤖 AI Analysis button clicked');
+    console.log('Semesters data:', semesters);
+    
     if (semesters.length === 0) {
         alert('Belum ada data!\n\nTambahkan semester dan mata kuliah dulu.');
         return;
     }
+    
     document.getElementById('aiModal').classList.add('show');
     document.getElementById('aiAnalysisContent').innerHTML = `
         <div class="ai-loading">
@@ -657,20 +661,38 @@ function showAIAnalysis() {
             <p>AI sedang menganalisis data kamu...</p>
         </div>
     `;
+    
     setTimeout(() => {
-        const analyzer = new AIAnalyzer(semesters);
-        const analysis = analyzer.analyze();
-        if (analysis.status === 'no_data') {
+        try {
+            console.log('🧠 Starting AI analysis...');
+            const analyzer = new AIAnalyzer(semesters);
+            const analysis = analyzer.analyze();
+            console.log('✅ Analysis result:', analysis);
+            
+            if (analysis.status === 'no_data') {
+                document.getElementById('aiAnalysisContent').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <h3>Belum Ada Data</h3>
+                        <p>${analysis.message}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            renderAIAnalysis(analysis);
+            console.log('✅ AI analysis rendered successfully');
+        } catch (error) {
+            console.error('❌ AI Analysis Error:', error);
             document.getElementById('aiAnalysisContent').innerHTML = `
                 <div class="empty-state">
-                    <i class="fa-solid fa-inbox"></i>
-                    <h3>Belum Ada Data</h3>
-                    <p>${analysis.message}</p>
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <h3>Error</h3>
+                    <p>Terjadi kesalahan saat menganalisis data. Coba lagi.</p>
+                    <p style="font-size: 0.875rem; color: red; margin-top: 10px;">${error.message}</p>
                 </div>
             `;
-            return;
         }
-        renderAIAnalysis(analysis);
     }, 1500);
 }
 
@@ -714,7 +736,7 @@ function renderAIAnalysis(analysis) {
         </div>
     `;
 
-    if (analysis.trend.direction !== 'neutral' && analysis.semesters.length >= 2) {
+    if (analysis.trend.direction !== 'neutral') {
         html += `
             <div class="ai-section ${analysis.trend.direction === 'up' ? 'success' : 'warning'}">
                 <div class="ai-section-header">
