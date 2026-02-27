@@ -34,6 +34,15 @@
                 <h1 class="gradient-text animate-float">Gradify</h1>
             </div>
             <div class="nav-actions">
+                <button onclick="showCharts()" class="btn-icon glow-btn" title="Charts">
+                    <i class="fa-solid fa-chart-line"></i>
+                </button>
+                <button onclick="showAchievements()" class="btn-icon glow-btn" title="Achievements">
+                    <i class="fa-solid fa-trophy"></i>
+                </button>
+                <button onclick="showShareCard()" class="btn-icon glow-btn" title="Share">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </button>
                 <button onclick="toggleTheme()" class="btn-icon glow-btn" title="Toggle Theme">
                     <i class="fa-solid fa-moon" id="themeIcon"></i>
                 </button>
@@ -198,7 +207,64 @@
         </div>
     </div>
 
-    <!-- Edit Course Modal -->
+    <!-- Charts Modal -->
+    <div id="chartsModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-chart-line"></i> Progress Charts</h3>
+                <button onclick="closeChartsModal()" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="chart-container">
+                    <canvas id="ipChart"></canvas>
+                </div>
+                <div class="chart-container" style="margin-top: 30px;">
+                    <canvas id="gradeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Modal -->
+    <div id="achievementsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-trophy"></i> Achievements</h3>
+                <button onclick="closeAchievementsModal()" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="achievementsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Card Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-share-nodes"></i> Share Your Progress</h3>
+                <button onclick="closeShareModal()" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="shareCard" class="share-card"></div>
+                <div class="share-buttons">
+                    <button onclick="downloadShareCard()" class="btn-primary">
+                        <i class="fa-solid fa-download"></i> Download Image
+                    </button>
+                    <button onclick="copyShareText()" class="btn-secondary">
+                        <i class="fa-solid fa-copy"></i> Copy Text
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <canvas id="confetti" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="script.js"></script>
     <div id="editCourseModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">

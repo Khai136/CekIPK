@@ -1323,3 +1323,224 @@ textarea:focus {
         gap: 10px;
     }
 }
+
+/* ========================================
+   CHARTS, ACHIEVEMENTS, SHARE CARDS
+   ======================================== */
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    padding: 20px;
+    background: var(--gray-50);
+    border-radius: 15px;
+}
+
+/* Achievements */
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.achievement-item {
+    background: var(--gray-50);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.achievement-item.unlocked {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));
+}
+
+.achievement-item.locked {
+    opacity: 0.4;
+    filter: grayscale(100%);
+}
+
+.achievement-item:hover {
+    transform: translateY(-4px);
+}
+
+.achievement-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.achievement-name {
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--gray-900);
+}
+
+.achievement-desc {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.achievement-unlocked-badge {
+    background: var(--success);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.achievement-progress {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin-top: 10px;
+}
+
+/* Share Card */
+.share-card {
+    width: 400px;
+    margin: 0 auto;
+    padding: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.share-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.share-card-content {
+    position: relative;
+    z-index: 1;
+}
+
+.share-card h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    font-weight: 800;
+}
+
+.share-card-ipk {
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 20px 0;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.share-card-label {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+.share-card-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px 0;
+}
+
+.share-card-stat {
+    text-align: center;
+}
+
+.share-card-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    display: block;
+}
+
+.share-card-stat-label {
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+.share-card-footer {
+    margin-top: 30px;
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.share-buttons button {
+    flex: 1;
+}
+
+/* Confetti */
+#confetti {
+    display: none;
+}
+
+/* Achievement Popup */
+.achievement-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    z-index: 10000;
+    text-align: center;
+    animation: achievementPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes achievementPop {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.achievement-popup .achievement-icon {
+    font-size: 5rem;
+    animation: bounce 0.5s ease-in-out 0.3s;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.achievement-popup h2 {
+    font-size: 1.75rem;
+    margin: 20px 0 10px;
+    color: var(--gray-900);
+}
+
+.achievement-popup p {
+    color: var(--gray-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .share-card {
+        width: 100%;
+        padding: 30px 20px;
+    }
+    
+    .share-card-ipk {
+        font-size: 3rem;
+    }
+}
