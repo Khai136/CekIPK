@@ -993,9 +993,6 @@ renderSemesters = function() {
                         </span>
                     </div>
                     <div class="semester-actions">
-                        <button onclick="showSemesterAI(${index})" class="btn-small btn-ai">
-                            <i class="fa-solid fa-brain"></i> AI
-                        </button>
                         <button onclick="openNotesModal(${index})" class="btn-small btn-notes">
                             <i class="fa-solid fa-note-sticky"></i> Notes
                         </button>
@@ -1778,22 +1775,22 @@ function renderOverallAI() {
                 <div class="ai-card-content">
                     <div class="progress-ring-container">
                         <div class="progress-ring">
-                            <svg width="150" height="150">
+                            <svg width="120" height="120">
                                 <defs>
                                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                                         <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
                                         <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
                                     </linearGradient>
                                 </defs>
-                                <circle class="progress-ring-circle" cx="75" cy="75" r="65"></circle>
-                                <circle class="progress-ring-circle-fill" cx="75" cy="75" r="65" 
-                                    stroke-dasharray="${2 * Math.PI * 65}" 
-                                    stroke-dashoffset="${2 * Math.PI * 65 * (1 - progress / 100)}">
+                                <circle class="progress-ring-circle" cx="60" cy="60" r="52"></circle>
+                                <circle class="progress-ring-circle-fill" cx="60" cy="60" r="52" 
+                                    stroke-dasharray="${2 * Math.PI * 52}" 
+                                    stroke-dashoffset="${2 * Math.PI * 52 * (1 - progress / 100)}">
                                 </circle>
                             </svg>
                             <div class="progress-ring-text">${progress}%</div>
                         </div>
-                        <p style="margin-top: 15px; font-weight: 600;">
+                        <p style="margin-top: 10px; font-weight: 600; font-size: 0.875rem;">
                             ${remaining} poin lagi ke Cum Laude (3.75)
                         </p>
                     </div>

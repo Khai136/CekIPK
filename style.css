@@ -1331,8 +1331,8 @@ textarea:focus {
 /* Chart Container */
 .chart-container {
     position: relative;
-    height: 300px;
-    padding: 20px;
+    height: 200px;
+    padding: 15px;
     background: var(--gray-50);
     border-radius: 15px;
 }
@@ -1589,11 +1589,11 @@ textarea:focus {
 /* AI Hero Section */
 .ai-hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 40px;
+    padding: 30px;
     border-radius: 20px;
     color: white;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     position: relative;
     overflow: hidden;
 }
@@ -1620,22 +1620,22 @@ textarea:focus {
 }
 
 .ai-hero h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 900;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
 .ai-hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1rem;
     opacity: 0.9;
 }
 
 .ai-hero-stats {
     display: flex;
     justify-content: center;
-    gap: 40px;
-    margin-top: 30px;
+    gap: 30px;
+    margin-top: 20px;
 }
 
 .ai-hero-stat {
@@ -1643,14 +1643,14 @@ textarea:focus {
 }
 
 .ai-hero-stat-value {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 900;
     display: block;
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
 .ai-hero-stat-label {
-    font-size: 1rem;
+    font-size: 0.875rem;
     opacity: 0.8;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -1666,7 +1666,7 @@ textarea:focus {
 
 .ai-insight-card {
     background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    padding: 25px;
+    padding: 20px;
     border-radius: 20px;
     border-left: 5px solid var(--primary);
     transition: all 0.3s;
@@ -1743,14 +1743,14 @@ textarea:focus {
 
 /* Trend Chart Small */
 .trend-mini-chart {
-    height: 60px;
-    margin: 15px 0;
+    height: 40px;
+    margin: 10px 0;
 }
 
 /* Recommendations Panel */
 .ai-recommendations {
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 30px;
+    padding: 20px;
     border-radius: 20px;
     margin-bottom: 20px;
     border: 2px solid #fbbf24;
@@ -1826,12 +1826,12 @@ textarea:focus {
 /* Progress Ring */
 .progress-ring-container {
     text-align: center;
-    margin: 20px 0;
+    margin: 15px 0;
 }
 
 .progress-ring {
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
     margin: 0 auto;
     position: relative;
 }
@@ -1843,13 +1843,13 @@ textarea:focus {
 .progress-ring-circle {
     fill: none;
     stroke: #e5e7eb;
-    stroke-width: 12;
+    stroke-width: 10;
 }
 
 .progress-ring-circle-fill {
     fill: none;
     stroke: url(#gradient);
-    stroke-width: 12;
+    stroke-width: 10;
     stroke-linecap: round;
     transition: stroke-dashoffset 1s ease;
 }
@@ -1859,7 +1859,7 @@ textarea:focus {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 900;
     color: var(--primary);
 }
@@ -1921,7 +1921,7 @@ textarea:focus {
 /* Prediction Box */
 .ai-prediction {
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    padding: 30px;
+    padding: 20px;
     border-radius: 20px;
     border: 2px solid #3b82f6;
     margin-top: 20px;
