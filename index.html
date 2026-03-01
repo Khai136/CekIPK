@@ -61,7 +61,13 @@
         <div class="summary-card glass-effect glow-card animate-slide-up">
             <div class="summary-header">
                 <h2>📊 Ringkasan Akademik</h2>
-                <div class="pulse-dot"></div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button onclick="showOverallAI()" class="btn-ai-overall">
+                        <i class="fa-solid fa-brain"></i>
+                        AI Insights
+                    </button>
+                    <div class="pulse-dot"></div>
+                </div>
             </div>
             <div class="summary-grid">
                 <div class="summary-item highlight shine-effect">
@@ -255,6 +261,19 @@
                         <i class="fa-solid fa-copy"></i> Copy Text
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall AI Analysis Modal -->
+    <div id="overallAIModal" class="modal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-brain"></i> AI Complete Analysis & Recommendations</h3>
+                <button onclick="closeOverallAIModal()" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="overallAIContent"></div>
             </div>
         </div>
     </div>

@@ -1626,3 +1626,535 @@ saveEditCourse = function() {
     originalSaveEditCourse();
     setTimeout(checkNewAchievements, 500);
 };
+
+// ========================================
+// OVERALL AI ANALYSIS - COMPLETE SYSTEM
+// ========================================
+
+function showOverallAI() {
+    if (semesters.length === 0) {
+        alert('Belum ada data untuk dianalisis!\n\nTambahkan semester terlebih dahulu.');
+        return;
+    }
+    
+    document.getElementById('overallAIModal').classList.add('show');
+    renderOverallAI();
+}
+
+function closeOverallAIModal() {
+    document.getElementById('overallAIModal').classList.remove('show');
+}
+
+function renderOverallAI() {
+    const result = calculateIPK();
+    const ipk = parseFloat(result.ipk);
+    
+    // Calculate comprehensive stats
+    const stats = calculateComprehensiveStats();
+    
+    // Generate HTML
+    let html = '';
+    
+    // HERO SECTION
+    html += `
+        <div class="ai-hero">
+            <div class="ai-hero-content">
+                <h2>🎓 Complete Academic Analysis</h2>
+                <p class="ai-hero-subtitle">AI-Powered Insights & Recommendations</p>
+                <div class="ai-hero-stats">
+                    <div class="ai-hero-stat">
+                        <span class="ai-hero-stat-value">${ipk}</span>
+                        <span class="ai-hero-stat-label">IPK</span>
+                    </div>
+                    <div class="ai-hero-stat">
+                        <span class="ai-hero-stat-value">${result.totalSKS}</span>
+                        <span class="ai-hero-stat-label">Total SKS</span>
+                    </div>
+                    <div class="ai-hero-stat">
+                        <span class="ai-hero-stat-value">${semesters.length}</span>
+                        <span class="ai-hero-stat-label">Semesters</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // INSIGHTS GRID
+    html += '<div class="ai-content-grid">';
+    
+    // Card 1: Overall Performance
+    const performanceLevel = getPerformanceLevel(ipk);
+    html += `
+        <div class="ai-insight-card ${performanceLevel.class}">
+            <div class="ai-card-header">
+                <div class="ai-card-icon">${performanceLevel.icon}</div>
+                <div class="ai-card-title">Overall Performance</div>
+            </div>
+            <div class="ai-card-content">
+                <div class="ai-card-value">${performanceLevel.label}</div>
+                <p>${performanceLevel.message}</p>
+            </div>
+        </div>
+    `;
+    
+    // Card 2: Trend Analysis with Mini Chart
+    const trend = analyzeTrendOverall();
+    html += `
+        <div class="ai-insight-card ${trend.class}">
+            <div class="ai-card-header">
+                <div class="ai-card-icon">${trend.icon}</div>
+                <div class="ai-card-title">Progress Trend</div>
+            </div>
+            <div class="ai-card-content">
+                <div class="ai-card-value">${trend.label}</div>
+                <p>${trend.message}</p>
+                <canvas id="trendMiniChart" class="trend-mini-chart"></canvas>
+            </div>
+        </div>
+    `;
+    
+    // Card 3: Grade Distribution
+    html += `
+        <div class="ai-insight-card">
+            <div class="ai-card-header">
+                <div class="ai-card-icon">📊</div>
+                <div class="ai-card-title">Grade Analysis</div>
+            </div>
+            <div class="ai-card-content">
+                <div style="display: flex; justify-content: space-between; margin: 15px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #10b981;">${stats.gradePercent.A}%</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">A Grades</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #3b82f6;">${stats.gradePercent.B}%</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">B Grades</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #f59e0b;">${stats.gradePercent.C}%</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">C Grades</div>
+                    </div>
+                </div>
+                <p>${stats.gradeInsight}</p>
+            </div>
+        </div>
+    `;
+    
+    // Card 4: Best & Worst Performance
+    html += `
+        <div class="ai-insight-card">
+            <div class="ai-card-header">
+                <div class="ai-card-icon">🎯</div>
+                <div class="ai-card-title">Performance Highlights</div>
+            </div>
+            <div class="ai-card-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: 700; color: #10b981; margin-bottom: 5px;">🏆 Best Semester</div>
+                    <div>Semester ${stats.bestSem.number}: IP ${stats.bestSem.ip}</div>
+                </div>
+                <div>
+                    <div style="font-weight: 700; color: #f59e0b; margin-bottom: 5px;">⚠️ Needs Attention</div>
+                    <div>Semester ${stats.worstSem.number}: IP ${stats.worstSem.ip}</div>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
+                    <strong>Average IP:</strong> ${stats.avgIP}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    html += '</div>'; // End grid
+    
+    // PROGRESS TO CUM LAUDE
+    if (ipk < 3.75) {
+        const progress = ((ipk / 3.75) * 100).toFixed(1);
+        const remaining = (3.75 - ipk).toFixed(2);
+        html += `
+            <div class="ai-insight-card" style="margin-bottom: 20px;">
+                <div class="ai-card-header">
+                    <div class="ai-card-icon">🎓</div>
+                    <div class="ai-card-title">Progress to Cum Laude</div>
+                </div>
+                <div class="ai-card-content">
+                    <div class="progress-ring-container">
+                        <div class="progress-ring">
+                            <svg width="150" height="150">
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="progress-ring-circle" cx="75" cy="75" r="65"></circle>
+                                <circle class="progress-ring-circle-fill" cx="75" cy="75" r="65" 
+                                    stroke-dasharray="${2 * Math.PI * 65}" 
+                                    stroke-dashoffset="${2 * Math.PI * 65 * (1 - progress / 100)}">
+                                </circle>
+                            </svg>
+                            <div class="progress-ring-text">${progress}%</div>
+                        </div>
+                        <p style="margin-top: 15px; font-weight: 600;">
+                            ${remaining} poin lagi ke Cum Laude (3.75)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // RECOMMENDATIONS
+    const recommendations = generateSmartRecommendations(stats, ipk);
+    html += `
+        <div class="ai-recommendations">
+            <div class="ai-rec-header">
+                <div class="ai-rec-icon">💡</div>
+                <div class="ai-rec-title">Smart Recommendations</div>
+            </div>
+            <div class="ai-rec-list">
+    `;
+    
+    recommendations.forEach((rec, index) => {
+        html += `
+            <div class="ai-rec-item">
+                <div class="ai-rec-number">${index + 1}</div>
+                <div class="ai-rec-content">
+                    <div class="ai-rec-text">${rec.title}</div>
+                    <div class="ai-rec-detail">${rec.detail}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    // SEMESTER TIMELINE
+    html += `
+        <div class="ai-insight-card" style="margin-bottom: 20px;">
+            <div class="ai-card-header">
+                <div class="ai-card-icon">📅</div>
+                <div class="ai-card-title">Semester Timeline</div>
+            </div>
+            <div class="ai-card-content">
+                <div class="ai-timeline">
+    `;
+    
+    semesters.forEach(sem => {
+        html += `
+            <div class="ai-timeline-item">
+                <div class="ai-timeline-content">
+                    <div class="ai-timeline-sem">Semester ${sem.number}</div>
+                    <div class="ai-timeline-ip">IP: ${sem.ip} (${sem.totalSKS} SKS)</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // PREDICTION
+    if (semesters.length >= 3) {
+        const prediction = predictFinalIPK();
+        html += `
+            <div class="ai-prediction">
+                <div class="ai-prediction-header">
+                    <div class="ai-prediction-title">🔮 Graduation Prediction</div>
+                    <p>Based on current performance trend</p>
+                </div>
+                <div class="ai-prediction-grid">
+                    <div class="ai-prediction-item">
+                        <div class="ai-prediction-value">${prediction.finalIPK}</div>
+                        <div class="ai-prediction-label">Expected Final IPK</div>
+                    </div>
+                    <div class="ai-prediction-item">
+                        <div class="ai-prediction-value">${prediction.semestersLeft}</div>
+                        <div class="ai-prediction-label">Semesters Left</div>
+                    </div>
+                    <div class="ai-prediction-item">
+                        <div class="ai-prediction-value">${prediction.predikat}</div>
+                        <div class="ai-prediction-label">Expected Grade</div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 20px; color: #1e40af;">
+                    ${prediction.message}
+                </p>
+            </div>
+        `;
+    }
+    
+    document.getElementById('overallAIContent').innerHTML = html;
+    
+    // Render mini trend chart
+    setTimeout(() => {
+        renderMiniTrendChart();
+    }, 100);
+}
+
+function calculateComprehensiveStats() {
+    // Grade distribution
+    let totalA = 0, totalB = 0, totalC = 0, totalCourses = 0;
+    
+    semesters.forEach(sem => {
+        sem.courses.forEach(course => {
+            totalCourses++;
+            if (course.grade >= 3.5) totalA++;
+            else if (course.grade >= 2.5) totalB++;
+            else totalC++;
+        });
+    });
+    
+    const gradePercent = {
+        A: totalCourses > 0 ? ((totalA / totalCourses) * 100).toFixed(0) : 0,
+        B: totalCourses > 0 ? ((totalB / totalCourses) * 100).toFixed(0) : 0,
+        C: totalCourses > 0 ? ((totalC / totalCourses) * 100).toFixed(0) : 0
+    };
+    
+    // Grade insight
+    let gradeInsight = '';
+    if (gradePercent.A >= 60) {
+        gradeInsight = '🌟 Excellent! Mayoritas nilai A - konsistensi luar biasa!';
+    } else if (gradePercent.A >= 40) {
+        gradeInsight = '👍 Bagus! Distribusi solid dengan room untuk improvement ke 60%+ A.';
+    } else {
+        gradeInsight = '💡 Perlu fokus lebih untuk meningkatkan persentase nilai A.';
+    }
+    
+    // Best and worst semester
+    const ips = semesters.map(s => parseFloat(s.ip));
+    const bestIP = Math.max(...ips);
+    const worstIP = Math.min(...ips.filter(ip => ip > 0));
+    
+    const bestSem = semesters.find(s => parseFloat(s.ip) === bestIP);
+    const worstSem = semesters.find(s => parseFloat(s.ip) === worstIP);
+    
+    // Average IP
+    const avgIP = (ips.reduce((a, b) => a + b, 0) / ips.length).toFixed(2);
+    
+    return {
+        gradePercent,
+        gradeInsight,
+        bestSem,
+        worstSem,
+        avgIP,
+        totalA,
+        totalB,
+        totalC
+    };
+}
+
+function getPerformanceLevel(ipk) {
+    if (ipk >= 3.75) {
+        return {
+            class: 'success',
+            icon: '🏆',
+            label: 'EXCELLENT',
+            message: 'IPK Cum Laude level! Outstanding achievement. Pertahankan sampai lulus!'
+        };
+    } else if (ipk >= 3.50) {
+        return {
+            class: 'success',
+            icon: '⭐',
+            label: 'GREAT',
+            message: `Sangat bagus! Hanya ${(3.75 - ipk).toFixed(2)} poin lagi ke Cum Laude. You can do it!`
+        };
+    } else if (ipk >= 3.00) {
+        return {
+            class: 'warning',
+            icon: '📈',
+            label: 'GOOD',
+            message: 'Performance solid. Dengan strategi yang tepat, IPK 3.5+ sangat achievable!'
+        };
+    } else {
+        return {
+            class: 'danger',
+            icon: '⚠️',
+            label: 'NEEDS WORK',
+            message: 'Perlu improvement signifikan. Focus, discipline, dan strategi baru diperlukan.'
+        };
+    }
+}
+
+function analyzeTrendOverall() {
+    if (semesters.length < 2) {
+        return {
+            class: '',
+            icon: '➡️',
+            label: 'INSUFFICIENT DATA',
+            message: 'Butuh minimal 2 semester untuk analisis trend.'
+        };
+    }
+    
+    const ips = semesters.map(s => parseFloat(s.ip));
+    let increases = 0, decreases = 0;
+    
+    for (let i = 1; i < ips.length; i++) {
+        if (ips[i] > ips[i - 1]) increases++;
+        else if (ips[i] < ips[i - 1]) decreases++;
+    }
+    
+    if (increases > decreases) {
+        return {
+            class: 'success',
+            icon: '📈',
+            label: 'IMPROVING',
+            message: `IP naik di ${increases} dari ${semesters.length - 1} transisi. Great momentum!`
+        };
+    } else if (decreases > increases) {
+        return {
+            class: 'warning',
+            icon: '📉',
+            label: 'DECLINING',
+            message: `IP turun di ${decreases} dari ${semesters.length - 1} transisi. Perlu action!`
+        };
+    } else {
+        return {
+            class: '',
+            icon: '➡️',
+            label: 'STABLE',
+            message: 'IP relatif konsisten. Good for stability, tapi bisa lebih baik!'
+        };
+    }
+}
+
+function renderMiniTrendChart() {
+    const canvas = document.getElementById('trendMiniChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const ips = semesters.map(s => parseFloat(s.ip));
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: semesters.map(s => `S${s.number}`),
+            datasets: [{
+                data: ips,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99,102,241,0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: { display: false },
+                y: { 
+                    display: false,
+                    min: 0,
+                    max: 4.0
+                }
+            }
+        }
+    });
+}
+
+function generateSmartRecommendations(stats, ipk) {
+    const recommendations = [];
+    
+    // Rec 1: Based on IPK
+    if (ipk >= 3.75) {
+        recommendations.push({
+            title: 'Maintain Excellence',
+            detail: 'Pertahankan pola belajar yang sudah terbukti. Jaga balance antara akademik dan well-being.'
+        });
+    } else if (ipk >= 3.50) {
+        recommendations.push({
+            title: 'Push to Cum Laude',
+            detail: `Target IP 3.80+ di ${Math.ceil((3.75 - ipk) / 0.15)} semester ke depan untuk secure Cum Laude.`
+        });
+    } else {
+        recommendations.push({
+            title: 'Strategic Improvement Plan',
+            detail: 'Fokus naikkan IP 0.2+ per semester. Target minimal 70% nilai A untuk boost signifikan.'
+        });
+    }
+    
+    // Rec 2: Based on grade distribution
+    if (stats.gradePercent.A < 50) {
+        recommendations.push({
+            title: 'Improve Grade Quality',
+            detail: `Current: ${stats.gradePercent.A}% A grades. Target: 60%+. Focus convert ${stats.totalB} nilai B jadi A.`
+        });
+    }
+    
+    // Rec 3: Study strategy
+    const avgIP = parseFloat(stats.avgIP);
+    if (avgIP < 3.5) {
+        recommendations.push({
+            title: 'Optimize Study Method',
+            detail: 'Try: Pomodoro (25 min focus), Active Recall, Spaced Repetition. Quality > quantity.'
+        });
+    }
+    
+    // Rec 4: Based on best semester
+    if (stats.bestSem) {
+        recommendations.push({
+            title: 'Replicate Success Pattern',
+            detail: `Semester ${stats.bestSem.number} was your best (IP ${stats.bestSem.ip}). Analyze: apa yang berbeda? Replicate it!`
+        });
+    }
+    
+    // Rec 5: Time management
+    recommendations.push({
+        title: 'Consistent Study Routine',
+        detail: 'Allocate 2-3 jam daily focused study. Start dari minggu 1, bukan SKS (Sistem Kebut Semalam).'
+    });
+    
+    // Rec 6: Support system
+    if (ipk < 3.5) {
+        recommendations.push({
+            title: 'Leverage Support System',
+            detail: 'Join study group, consult dosen regularly, consider tutor untuk MK sulit. Teamwork = better results.'
+        });
+    }
+    
+    return recommendations.slice(0, 6); // Max 6 recommendations
+}
+
+function predictFinalIPK() {
+    const currentIPK = parseFloat(calculateIPK().ipk);
+    const ips = semesters.map(s => parseFloat(s.ip));
+    
+    // Simple linear regression for trend
+    const recentIPs = ips.slice(-3); // Last 3 semesters
+    const avgRecent = recentIPs.reduce((a, b) => a + b, 0) / recentIPs.length;
+    
+    // Predict 4 more semesters with slight regression to mean
+    const semestersLeft = Math.max(4, 8 - semesters.length);
+    const predictedFinal = (currentIPK + avgRecent) / 2;
+    
+    let predikat = '';
+    if (predictedFinal >= 3.75) predikat = 'Cum Laude';
+    else if (predictedFinal >= 3.50) predikat = 'Sangat Memuaskan';
+    else if (predictedFinal >= 3.00) predikat = 'Memuaskan';
+    else predikat = 'Lulus';
+    
+    let message = '';
+    if (predictedFinal >= currentIPK + 0.1) {
+        message = '📈 Trajectory bagus! Maintain atau improve untuk hasil optimal.';
+    } else if (predictedFinal < currentIPK - 0.1) {
+        message = '⚠️ Warning: Trend menunjukkan possible decline. Perlu action sekarang!';
+    } else {
+        message = '➡️ Projected: Relatif stable. Push harder untuk hasil lebih baik!';
+    }
+    
+    return {
+        finalIPK: predictedFinal.toFixed(2),
+        semestersLeft: semestersLeft,
+        predikat: predikat,
+        message: message
+    };
+}
